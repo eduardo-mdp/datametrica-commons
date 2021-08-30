@@ -8,13 +8,6 @@
     <artifactId>commons</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <parent>
-        <groupId>...</groupId>
-        <artifactId>ref-pom</artifactId>
-        <version>..</version>
-        <relativePath>../pom</relativePath>
-    </parent>
-
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>

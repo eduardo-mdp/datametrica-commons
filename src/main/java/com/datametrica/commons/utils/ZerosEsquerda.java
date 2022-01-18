@@ -1,23 +1,16 @@
 package com.datametrica.commons.utils;
 
-public final class ZerosEsquerda {
+import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 
-    public static String aplicarZerosEsquerda(String texto, int quantidadeZeros) {
-        return ajustar(texto, quantidadeZeros);
-    }
+import static com.datametrica.commons.ponto.constants.Constantes.QUANTIDADE_ZEROS;
+import static com.datametrica.commons.ponto.constants.Constantes.ZERO;
 
-    private static String ajustar(String texto, int quantidadeZeros) {
-        int qtdNumerosZeros = Math.abs(texto.length() - quantidadeZeros);
-        return criarZeros(qtdNumerosZeros) +
-                texto;
-    }
+@UtilityClass
+public class ZerosEsquerda {
 
-    private static String criarZeros(int quantidade) {
-        StringBuilder retorno = new StringBuilder().append("0");
-        for (int i = 1; i < quantidade; i++) {
-            retorno.append("0");
-        }
-        return retorno.toString();
+    public static String aplicarZerosEsquerda(String texto) {
+        return StringUtils.leftPad(texto, QUANTIDADE_ZEROS, ZERO);
     }
 
 }

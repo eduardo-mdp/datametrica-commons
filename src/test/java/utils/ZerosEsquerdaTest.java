@@ -12,8 +12,15 @@ class ZerosEsquerdaTest {
 
     @Test
     void aplicarTeste() {
-        final String matricula = "1";
-        final String retornoEsperado = "000001";
-        Assertions.assertEquals(retornoEsperado, aplicarZerosEsquerda(matricula, 6));
+        final String matricula = "000";
+        final String retornoEsperado = "000000";
+        Assertions.assertEquals(retornoEsperado, aplicarZerosEsquerda(matricula));
+    }
+
+    @Test
+    void aplicarTeste2() {
+        final String matricula = "000000";
+        final String retornoEsperado = "000000";
+        Assertions.assertEquals(retornoEsperado, aplicarZerosEsquerda(matricula));
     }
 }

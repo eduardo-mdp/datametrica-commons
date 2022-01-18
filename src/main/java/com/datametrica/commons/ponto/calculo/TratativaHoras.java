@@ -1,47 +1,45 @@
 package com.datametrica.commons.ponto.calculo;
 
 import com.datametrica.commons.ponto.model.SubtracaoHorasModel;
+import lombok.experimental.UtilityClass;
 
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
+import static com.datametrica.commons.utils.Constantes.DATE_TIME_FORMATTER;
+import static com.datametrica.commons.utils.Constantes.TIME_FORMATTER;
+
+@UtilityClass
 public class TratativaHoras {
 
-    private TratativaHoras() {
-        throw new IllegalStateException("Utility class");
-    }
-
-    static SubtracaoHorasModel subtracaoHoras(String horaInicio, String horaFim) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        LocalTime dtHoraInicio = LocalTime.parse(horaInicio, formatter);
-        LocalTime dtHoraFim = LocalTime.parse(horaFim, formatter);
-        if (dtHoraFim.isAfter(dtHoraInicio)) {
+    public static SubtracaoHorasModel reducaoHoras(String horaBase, String reducao) {
+        LocalTime lTHoraBase = LocalTime.parse(horaBase, TIME_FORMATTER);
+        LocalTime lTReducao = LocalTime.parse(reducao, TIME_FORMATTER);
+        if (lTReducao.isAfter(lTHoraBase)) {
             return SubtracaoHorasModel.builder()
                     .negativo(true)
-                    .tempo(dtHoraFim.minusHours(dtHoraInicio.getHour())
-                            .minusMinutes(dtHoraInicio.getMinute())
-                            .minusSeconds(dtHoraInicio.getSecond())
+                    .tempo(lTReducao.minusHours(lTHoraBase.getHour())
+                            .minusMinutes(lTHoraBase.getMinute())
+                            .minusSeconds(lTHoraBase.getSecond())
                             .toString())
                     .build();
         }
         return SubtracaoHorasModel.builder()
                 .negativo(false)
-                .tempo(dtHoraInicio.minusHours(dtHoraFim.getHour())
-                        .minusMinutes(dtHoraFim.getMinute())
-                        .minusSeconds(dtHoraFim.getSecond())
+                .tempo(lTHoraBase.minusHours(lTReducao.getHour())
+                        .minusMinutes(lTReducao.getMinute())
+                        .minusSeconds(lTReducao.getSecond())
                         .toString())
                 .build();
 
     }
 
-    static String subtracaoDataHora(String horaInicio, String horaFim) {
+    public static String subtracaoDataHora(String horaInicio, String horaFim) {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            LocalDateTime dataHoraInicio = LocalDateTime.parse(horaInicio, formatter);
-            LocalDateTime dataHoraFim = LocalDateTime.parse(horaFim, formatter);
+            LocalDateTime dataHoraInicio = LocalDateTime.parse(horaInicio, DATE_TIME_FORMATTER);
+            LocalDateTime dataHoraFim = LocalDateTime.parse(horaFim, DATE_TIME_FORMATTER);
             long totalSegundos = ChronoUnit.SECONDS.between(dataHoraInicio, dataHoraFim);
             long hours = totalSegundos / 3600;
             long minutes = (totalSegundos % 3600) / 60;
@@ -54,13 +52,12 @@ public class TratativaHoras {
 
     }
 
-    static String somaHoras(String horaInicial, String horaSoma) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        LocalTime dtHoraInicial = LocalTime.parse(horaInicial, formatter);
-        LocalTime dtHoraSoma = LocalTime.parse(horaSoma, formatter);
-        return dtHoraInicial.plusHours(dtHoraSoma.getHour())
-                .plusMinutes(dtHoraSoma.getMinute())
-                .plusSeconds(dtHoraSoma.getSecond()).toString();
+    public static String somaHoras(String tempo, String tempoSoma) {
+        LocalTime horaInicial = LocalTime.parse(tempo, TIME_FORMATTER);
+        LocalTime horaSoma = LocalTime.parse(tempoSoma, TIME_FORMATTER);
+        return horaInicial.plusHours(horaSoma.getHour())
+                .plusMinutes(horaSoma.getMinute())
+                .plusSeconds(horaSoma.getSecond()).toString();
     }
 
 }

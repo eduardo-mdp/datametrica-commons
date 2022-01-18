@@ -1,41 +1,55 @@
 package ponto.calculo;
 
 import com.datametrica.commons.ponto.calculo.SaldoLiquido;
+import com.datametrica.commons.ponto.calculo.anatel.SaldoLiquidoAnatel;
+import com.datametrica.commons.ponto.model.AnatelModel;
 import com.datametrica.commons.ponto.model.SaldoLiquidoModel;
+import com.datametrica.commons.ponto.model.TempoTrabalhadoAnatelModel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static com.datametrica.commons.utils.Constantes.HORA_ZERADA;
 import static utils.TestUtils.saldoLiquidoModel;
+import static utils.TestUtils.apontamentosSemHoraExtra0600;
 
 
 @ExtendWith(MockitoExtension.class)
-class SaldoLiquidoTest {
+class SaldoLiquidoAnatelTest {
 
     @Test
     void deveRetornarSaldoZerado() {
-        final String horaZerada = "00:00";
+        final TempoTrabalhadoAnatelModel pausas = TempoTrabalhadoAnatelModel.builder()
+                .login("08:00")
+                .sLanche("12:00")
+                .rLanche("12:20")
+                .logout("14:20")
+                .build();
         final SaldoLiquidoModel tempos = SaldoLiquidoModel.builder()
                 .abonaDia(false)
-                .horasAbono(horaZerada)
-                .horasEscaladas(horaZerada)
-                .horasTrabalhadas(horaZerada)
-                .horasAfastamento(horaZerada)
-                .horasAbonoGestor(horaZerada)
+                .horasAbono(HORA_ZERADA)
+                .horasEscaladas("06:00")
+                .horasTrabalhadas(HORA_ZERADA)
+                .horasAfastamento(HORA_ZERADA)
+                .horasAbonoGestor(HORA_ZERADA)
                 .build();
 
         final SaldoLiquidoModel retornoEsperado = SaldoLiquidoModel.builder()
                 .abonaDia(false)
-                .horasAbono(horaZerada)
-                .horasEscaladas(horaZerada)
-                .horasTrabalhadas(horaZerada)
-                .horasAfastamento(horaZerada)
-                .saldoLiquido(horaZerada)
-                .horasAbonoGestor(horaZerada)
+                .horasAbono(HORA_ZERADA)
+                .horasEscaladas(HORA_ZERADA)
+                .horasTrabalhadas(HORA_ZERADA)
+                .horasAfastamento(HORA_ZERADA)
+                .saldoLiquido(HORA_ZERADA)
+                .horasAbonoGestor(HORA_ZERADA)
                 .negativo(false)
                 .build();
-        Assertions.assertEquals(retornoEsperado, SaldoLiquido.calcular(tempos));
+
+        AnatelModel retorno = SaldoLiquidoAnatel.calcular(saldoLiquidoModel(), apontamentosSemHoraExtra0600());
+        System.out.println(retorno.getTempoTrabalhado());
+        System.out.println(retorno.getSaldoLiquido());
+        Assertions.assertEquals(retornoEsperado, retorno);
     }
 
     @Test

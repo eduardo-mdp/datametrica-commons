@@ -3,15 +3,14 @@ package com.datametrica.commons.ponto.calculo;
 import com.datametrica.commons.ponto.model.SaldoLiquidoModel;
 import com.datametrica.commons.ponto.model.SubtracaoHorasModel;
 
-import java.time.DateTimeException;
 import java.time.LocalTime;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static com.datametrica.commons.utils.Constantes.CORTE_PARA_NAO_ABONAR;
+import static com.datametrica.commons.utils.Constantes.HORA_ZERADA;
+import static com.datametrica.commons.utils.Validacoes.isBefore;
+import static com.datametrica.commons.utils.Validacoes.validarFormato;
 
 public final class SaldoLiquido {
-
-    private static final String EXPRESSAO = "(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]";
-    private static final String HORA_ZERADA = "00:00";
 
     private SaldoLiquido() {
         throw new IllegalStateException("Utility class");
@@ -28,24 +27,16 @@ public final class SaldoLiquido {
                 validarFormato(tempos.getHorasEscaladas()));
         abonarJornadaIncompletaAbonoLegal(tempos);
         abonarJornadaIncompletaAbonoGestao(tempos);
+        zerarSaldoSeMenorOuIgual(tempos);
     }
 
     private static void horaInicioMenosHoraFim(SaldoLiquidoModel tempos, String horaInicio, String horaFim) {
-        SubtracaoHorasModel saldo = TratativaHoras.subtracaoHoras(horaInicio,
+        SubtracaoHorasModel saldo = TratativaHoras.reducaoHoras(horaInicio,
                 horaFim);
         tempos.setNegativo(saldo.isNegativo());
         tempos.setSaldoLiquido(saldo.getTempo());
     }
 
-
-    private static String validarFormato(final String time) {
-        Pattern pattern = Pattern.compile(EXPRESSAO);
-        Matcher matcher = pattern.matcher(time);
-        if (!matcher.matches()) {
-            throw new DateTimeException("Formato aceito HH:mm .");
-        }
-        return time;
-    }
 
     private static void ajustarJornada(SaldoLiquidoModel tempos) {
         if (!tempos.getHorasAfastamento().equals(HORA_ZERADA)) {
@@ -77,7 +68,13 @@ public final class SaldoLiquido {
                 horaInicioMenosHoraFim(tempos, HORA_ZERADA, HORA_ZERADA);
             }
         }
+    }
 
+    private static void zerarSaldoSeMenorOuIgual(SaldoLiquidoModel tempos) {
+        if (isBefore(tempos.getSaldoLiquido(), CORTE_PARA_NAO_ABONAR)) {
+            tempos.setSaldoLiquido(HORA_ZERADA);
+            tempos.setNegativo(false);
+        }
     }
 
 }
